@@ -14,7 +14,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public function verification_code(): HasOne{
-        return $this->hasOne(Verification_Code::class);
+        return $this->hasOne(VerificationCode::class);
     }
 
     /**
