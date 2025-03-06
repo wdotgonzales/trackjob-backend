@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class VerificationCodeFactory extends Factory
 {
     protected $model = VerificationCode::class;
+
     /**
      * Define the model's default state.
      *
@@ -19,19 +20,24 @@ class VerificationCodeFactory extends Factory
     public function definition(): array
     {
         return [
+            'otp' => $this->faker->numerify('######'), // Default OTP generation
         ];
     }
-    
-    public function generateRandomOtp(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'otp' => $this->faker->numerify('######'), // Generates a 6-digit number
-        ]);
-    }
 
-    public function insertUserId($user_id){
-        return $this->state(fn(array $attributes) => [
-            'user_id' => $user_id
-        ]);
+    public function setSubscriptionDate($subscription_id): static
+    {
+        return $this->state(function (array $attributes) use ($subscription_id) {
+            $monthsToAdd = match ($subscription_id) {
+                1 => 1,
+                2 => 4,
+                3 => 10,
+                default => 0,
+            };
+
+            return [
+                'start_date' => now(),
+                'expiration_date' => now()->addMonths($monthsToAdd)
+            ];
+        });
     }
 }

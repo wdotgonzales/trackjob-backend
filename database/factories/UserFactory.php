@@ -41,4 +41,10 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function setUserProfileUrl($profile_url){
+        return $this->state(fn (array $attributes) => [
+            'profile_url' => $profile_url
+        ]);
+    }
 }
