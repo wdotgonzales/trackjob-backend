@@ -24,19 +24,12 @@ class VerificationCodeFactory extends Factory
         ];
     }
 
-    public function setSubscriptionDate($subscription_id): static
+    public function setExpirationForVerificationCode(): static
     {
-        return $this->state(function (array $attributes) use ($subscription_id) {
-            $monthsToAdd = match ($subscription_id) {
-                1 => 1,
-                2 => 4,
-                3 => 10,
-                default => 0,
-            };
-
+        return $this->state(function (array $attributes) {
             return [
                 'start_date' => now(),
-                'expiration_date' => now()->addMonths($monthsToAdd)
+                'expiration_date' => now()->addMinutes(10)
             ];
         });
     }
