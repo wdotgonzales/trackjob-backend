@@ -14,13 +14,28 @@ class WorkArrangementSeeder extends Seeder
     {
         $workArrangementArr = [
             [
-                "title" => "Internship",
-                "description" => "Temporary employment, often for students or recent graduates, typically for learning and experience."
+                "title" => "On-site",
+                "description" => "Employees work at the company's physical location."
             ],
 
             [
-                "title" => "Temporary",
-                "description" => "Employees hired for short-term needs, sometimes through staffing agencies."
+                "title" => "Remote",
+                "description" => "Employees work from home or another location outside the office."
+            ],
+
+            [
+                "title" => "Hybrid",
+                "description" => "A mix of remote and on-site work."
+            ],
+
+            [
+                "title" => "Flexible Hours",
+                "description" => "Employees choose when they start and end their workday within agreed-upon limits."
+            ],
+
+            [
+                "title" => "Shift Work",
+                "description" => "Employees work in rotating shifts, such as night shifts or split shifts."
             ],
         ];
         
