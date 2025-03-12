@@ -49,7 +49,7 @@ class JobApplicationFactory extends Factory
 
     public function generateRandomWorkArrangementId()
     {
-        $random_id = random_int(7, 11);
+        $random_id = random_int(1, 5);
         return $this->state(fn(array $attributes) => [
             'work_arragement_id' => $random_id
         ]);

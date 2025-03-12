@@ -19,7 +19,7 @@ class ReminderFactory extends Factory
         return [
             'title' => $this->faker->word(), // Corrected method
             'description' => $this->faker->sentence(),
-            'isReminderUser' => 0,
+            'isReminderUsed' => 0,
             'reminder_date' => now()->addDay(),
         ];
     }
