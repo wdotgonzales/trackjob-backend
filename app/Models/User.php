@@ -14,12 +14,19 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    public function verification_code(): HasOne{
+    public function verification_code(): HasOne
+    {
         return $this->hasOne(VerificationCode::class);
     }
 
-    public function jobApplications(): HasMany{
+    public function jobApplications(): HasMany
+    {
         return $this->hasMany(JobApplication::class);
+    }
+
+    public function subscription(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
     }
 
     /**
