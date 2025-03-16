@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     /**
@@ -32,32 +33,49 @@ class UserController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:8',
+            'profile_url' => 'required|url|max:255'
         ]);
 
-        $validatedData['password'] = bcrypt($validatedData['password']);
+        try {
+            $validatedData['password'] = Hash::make($validatedData['password']);
 
-        $user = User::create($validatedData);
+            $user = User::create($validatedData);
 
-        return response()->json([
-            'message' => 'Product created successfully!',
-            'user' => new UserResource($user)
-        ], 201);
+            return response()->json([
+                'message' => 'User created successfully!',
+                'user' => new UserResource($user)
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to create user.',
+                'error' => $e->getMessage() // Useful for debugging (remove in production)
+            ], 500);
+        }
     }
+
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $user = User::find($id);
+        try {
+            $user = User::find($id);
 
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            return new UserResource($user);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve user.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return new UserResource($user);
     }
+
 
 
     /**
@@ -81,15 +99,53 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = User::find($id);
+        try {
+            $user = User::find($id);
 
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            $user->delete();
+
+            return response()->json(['message' => 'User deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete user.',
+                'error' => $e->getMessage()
+            ], 500);
         }
+    }
 
-        $user->delete();
+    public function changeProfilePictureAndFullName(Request $request, string $id)
+    {
+        try {
+            $user = User::find($id);
 
-        return response()->json(['message' => 'User deleted successfully']);
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            $validatedData = $request->validate([
+                'profile_url' => 'required|url|max:255',
+                'name' => 'required|string|max:255',
+            ]);
+
+            $user->update([
+                'profile_url' => $validatedData['profile_url'],
+                'name' => $validatedData['name'],
+            ]);
+
+            return response()->json([
+                'message' => 'User changed name and profile URL successfully',
+                'user' => new UserResource($user)
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update user profile.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }
