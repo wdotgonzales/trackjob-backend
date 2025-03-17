@@ -148,7 +148,7 @@ class ForgotYourPasswordController extends Controller
             'subject' => 'required|string',
             'title' => 'required|string',
             'message' => 'required|string',
-            'otp' => 'required|string|max:6'
+            'otp' => 'required|string|min:6|max:6',
         ]);
 
         // Prepare email data to be passed to the Mailable class
@@ -164,7 +164,7 @@ class ForgotYourPasswordController extends Controller
             Mail::to($request->email)->send(new SendMail($data));
 
             // Return success response if email was sent successfully
-            return response()->json(['message' => 'Email sent successfully!']);
+            return response()->json(['message' => 'Email sent successfully!', 'email' => $request->email], 200);
         } catch (\Exception $e) {
             // Return error response if sending email fails
             return response()->json([
@@ -173,6 +173,32 @@ class ForgotYourPasswordController extends Controller
             ], 500);
         }
     }
+
+    public function validateOtp(Request $request)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'otp' => 'required|string|min:6|max:6',
+            'email' => 'required|email',
+        ]);
+
+        // Extract validated inputs
+        $otp = $request->input('otp');
+        $email = $request->input('email');
+
+        // Check if an OTP exists for the given email
+        $existingOtp = VerificationCode::where('email', $email)->first();
+
+        // Validate if the OTP matches the one in the database
+        if ($existingOtp && $existingOtp->otp == $otp) {
+            // If OTP matches, return a success response
+            return response()->json(['message' => 'OTP is valid.']);
+        } else {
+            // If OTP is invalid or doesn't exist, return an error response
+            return response()->json(['message' => 'Invalid OTP or email.'], 400);
+        }
+    }
+
 
 
 }
