@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+
 class ForgotYourPasswordController extends Controller
 {
     public function checkIfEmailBelongsToAnAccount(Request $request)
@@ -174,6 +176,8 @@ class ForgotYourPasswordController extends Controller
         }
     }
 
+
+    // -- REVISE THIS CHECK IF OTP IS STILL VALID via start_date and end_data.
     public function validateOtp(Request $request)
     {
         // Validate the incoming request data
@@ -192,10 +196,46 @@ class ForgotYourPasswordController extends Controller
         // Validate if the OTP matches the one in the database
         if ($existingOtp && $existingOtp->otp == $otp) {
             // If OTP matches, return a success response
-            return response()->json(['message' => 'OTP is valid.']);
+            return response()->json(['message' => 'OTP is valid.', 'otp' => $otp, 'email' => $email], 200);
         } else {
             // If OTP is invalid or doesn't exist, return an error response
             return response()->json(['message' => 'Invalid OTP or email.'], 400);
+        }
+    }
+
+    public function changeUserPassword(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'new_password' => 'required|string|min:8',
+                'email' => 'required|email',
+            ]);
+
+            $user = User::where('email', $validatedData['email'])->first();
+
+            if (!$user) {
+                return response()->json([
+                    'email' => $validatedData['email'],
+                    'user' => null,
+                    'message' => 'Email does not belong to any account.'
+                ], 404);
+            }
+
+            $new_password = Hash::make($validatedData['new_password']);
+
+            $user->update([
+                'password' => $new_password,
+            ]);
+
+            return response()->json([
+                'message' => "User's password is successfully changed",
+                'user' => new UserResource($user)
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Something went wrong. Please try again.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

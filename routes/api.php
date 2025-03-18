@@ -31,3 +31,5 @@ Route::post('/forgotyourpassword/send-otp-to-email', [ForgotYourPasswordControll
 
 // Validate if otp is correct
 Route::get('/forgotyourpassword/validate-otp', [ForgotYourPasswordController::class, 'validateOtp']);
+
+Route::post('/forgotyourpassword/change-user-password', [ForgotYourPasswordController::class, 'changeUserPassword']);
