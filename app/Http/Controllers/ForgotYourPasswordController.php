@@ -113,14 +113,14 @@ class ForgotYourPasswordController extends Controller
             // Generate new OTP and set expiration
             $otp = random_int(100000, 999999);
             $start_date = Carbon::now('Asia/Manila');
-            $expiration_date = $start_date->copy()->addMinutes(10);
+            $expiration_date = $start_date->copy()->addMinutes(5);
 
             // Insert into database
             VerificationCode::create([
                 'email' => $email,
                 'otp' => $otp,
-                'expiration_date' => $start_date,
-                'start_date' => $expiration_date,
+                'expiration_date' => $expiration_date,
+                'start_date' => $start_date,
             ]);
 
             return response()->json([
@@ -181,26 +181,37 @@ class ForgotYourPasswordController extends Controller
     public function validateOtp(Request $request)
     {
         // Validate the incoming request data
-        $request->validate([
+        $validatedData = $request->validate([
             'otp' => 'required|string|min:6|max:6',
             'email' => 'required|email',
         ]);
 
         // Extract validated inputs
-        $otp = $request->input('otp');
-        $email = $request->input('email');
+        $otp = $validatedData['otp'];
+        $email = $validatedData['email'];
 
         // Check if an OTP exists for the given email
         $existingOtp = VerificationCode::where('email', $email)->first();
 
-        // Validate if the OTP matches the one in the database
-        if ($existingOtp && $existingOtp->otp == $otp) {
-            // If OTP matches, return a success response
-            return response()->json(['message' => 'OTP is valid.', 'otp' => $otp, 'email' => $email], 200);
-        } else {
-            // If OTP is invalid or doesn't exist, return an error response
+        if (!$existingOtp) {
             return response()->json(['message' => 'Invalid OTP or email.'], 400);
         }
+
+        // Validate if the OTP matches the one in the database
+        if ($existingOtp->otp !== $otp) {
+            return response()->json(['message' => 'Invalid OTP.'], 400);
+        }
+
+        if (Carbon::now()->setTimezone('Asia/Manila')->greaterThan(Carbon::parse($existingOtp->expiration_date)->setTimezone('Asia/Manila'))) {
+            return response()->json(['message' => 'OTP has expired.'], 400);
+        }
+
+        return response()->json([
+            'message' => 'OTP is valid.',
+            'otp' => $otp,
+            'email' => $email,
+
+        ], 200);
     }
 
     public function changeUserPassword(Request $request)
