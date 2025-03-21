@@ -17,32 +17,11 @@ class ForgotYourPasswordController extends Controller
 {
     public function checkIfEmailBelongsToAnAccount(Request $request)
     {
-        // Get the 'email' parameter from the query string. ex: api/forgotyourpassword/check-if-email-belongs-to-an-account?email=wzy@gmail.com
-        $email = $request->query(key: 'email');
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+        ]);
 
-        // Check if the email parameter is missing
-        if (!$email) {
-            return response()->json(
-                [
-                    'email' => null,
-                    'user' => null,
-                    'message' => 'Email parameter is required.'
-                ],
-                400 // HTTP status code for Bad Request
-            );
-        }
-
-        // Validate the email format using PHP's filter_var function
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return response()->json(
-                [
-                    'email' => $email,
-                    'user' => null,
-                    'message' => 'Invalid email format.'
-                ],
-                400 // HTTP status code for Bad Request
-            );
-        }
+        $email = $validatedData['email'];
 
         try {
             // Attempt to find a user by the provided email address
@@ -85,15 +64,11 @@ class ForgotYourPasswordController extends Controller
 
     public function generateOtp(Request $request)
     {
-        $email = $request->query('email');
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+        ]);
 
-        if (!$email) {
-            return response()->json([
-                'email' => null,
-                'user' => null,
-                'message' => 'Email parameter is required.'
-            ], 400);
-        }
+        $email = $validatedData['email'];
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return response()->json([

@@ -20,6 +20,14 @@ Route::apiResource('user', UserController::class);
 Route::put('/user/{id}/update-profile-url-and-full-name', [UserController::class, 'changeProfilePictureAndFullName']);
 
 
+/* -------- Register Routes -------- */
+
+
+/* -------- End of Register Routes -------- */
+
+
+/* -------- Forgot Your Password Routes -------- */
+
 // This is used on forgot your password page. Before sending otp to email, it will check if user input email does belong to an account. (Logged Out)
 Route::get('/forgotyourpassword/check-if-email-belongs-to-an-account', [ForgotYourPasswordController::class, 'checkIfEmailBelongsToAnAccount']);
 
@@ -32,4 +40,7 @@ Route::post('/forgotyourpassword/send-otp-to-email', [ForgotYourPasswordControll
 // Validate if otp is correct
 Route::get('/forgotyourpassword/validate-otp', [ForgotYourPasswordController::class, 'validateOtp']);
 
+// Change password
 Route::post('/forgotyourpassword/change-user-password', [ForgotYourPasswordController::class, 'changeUserPassword']);
+
+/* -------- End of Forgot Your Password Routes -------- */
