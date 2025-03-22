@@ -4,7 +4,7 @@ use App\Http\Controllers\ForgotYourPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\AuthController;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
@@ -20,27 +20,17 @@ Route::apiResource('user', UserController::class);
 Route::put('/user/{id}/update-profile-url-and-full-name', [UserController::class, 'changeProfilePictureAndFullName']);
 
 
-/* -------- Register Routes -------- */
-
-
-/* -------- End of Register Routes -------- */
-
+/* -------- Auth Controller Routes -------- */
+Route::get('/auth/check-if-email-belongs-to-an-account', [AuthController::class, 'checkIfEmailBelongsToAnAccount']);
+Route::post('/auth/generate-otp', [AuthController::class, 'generateOtp']);
+Route::post('/auth/send-otp-to-email', [AuthController::class, 'sendOtpToEmail']);
+Route::post('/auth/register', [AuthController::class, 'register']);
+/* -------- End of Auth Controller Routes -------- */
 
 /* -------- Forgot Your Password Routes -------- */
-
-// This is used on forgot your password page. Before sending otp to email, it will check if user input email does belong to an account. (Logged Out)
 Route::get('/forgotyourpassword/check-if-email-belongs-to-an-account', [ForgotYourPasswordController::class, 'checkIfEmailBelongsToAnAccount']);
-
-// This is used to generate otp for the email that was validated in `/forgotyourpassword/check-if-email-belongs-to-an-account`
 Route::post('/forgotyourpassword/generate-otp', [ForgotYourPasswordController::class, 'generateOtp']);
-
-// This is used to send the otp into email
 Route::post('/forgotyourpassword/send-otp-to-email', [ForgotYourPasswordController::class, 'sendOtpToEmail']);
-
-// Validate if otp is correct
 Route::get('/forgotyourpassword/validate-otp', [ForgotYourPasswordController::class, 'validateOtp']);
-
-// Change password
 Route::post('/forgotyourpassword/change-user-password', [ForgotYourPasswordController::class, 'changeUserPassword']);
-
 /* -------- End of Forgot Your Password Routes -------- */
