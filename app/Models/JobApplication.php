@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class JobApplication extends Model
 {
     use HasFactory;
-    
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -26,11 +26,27 @@ class JobApplication extends Model
         return $this->belongsTo(WorkArrangement::class);
     }
 
-    public function jobApplicationStatus():BelongsTo {
+    public function jobApplicationStatus(): BelongsTo
+    {
         return $this->belongsTo(JobApplicationStatus::class);
     }
 
-    public function reminder(): HasMany{
+    public function reminder(): HasMany
+    {
         return $this->hasMany(Reminder::class);
     }
+
+    protected $fillable = [
+        'user_id',
+        'position_title',
+        'company_name',
+        'employment_type_id',
+        'work_arrangement_id',
+        'job_application_status_id',
+        'job_posting_link',
+        'date_applied',
+        'company_logo_url',
+        'job_location'
+    ];
+
 }

@@ -51,7 +51,7 @@ class JobApplicationFactory extends Factory
     {
         $random_id = random_int(1, 5);
         return $this->state(fn(array $attributes) => [
-            'work_arragement_id' => $random_id
+            'work_arrangement_id' => $random_id
         ]);
     }
 }

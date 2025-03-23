@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JobApplicationController;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
@@ -18,7 +19,6 @@ Route::apiResource('user', UserController::class);
 
 // Change User's Profile Url And Full Name. (Logged In) 
 Route::put('/user/{id}/update-profile-url-and-full-name', [UserController::class, 'changeProfilePictureAndFullName']);
-
 
 /* -------- Auth Controller Routes -------- */
 Route::get('/auth/check-if-email-belongs-to-an-account', [AuthController::class, 'checkIfEmailBelongsToAnAccount']);
@@ -34,3 +34,8 @@ Route::post('/forgotyourpassword/send-otp-to-email', [ForgotYourPasswordControll
 Route::get('/forgotyourpassword/validate-otp', [ForgotYourPasswordController::class, 'validateOtp']);
 Route::post('/forgotyourpassword/change-user-password', [ForgotYourPasswordController::class, 'changeUserPassword']);
 /* -------- End of Forgot Your Password Routes -------- */
+
+
+/* Job Application Routes */
+Route::apiResource('user.job-applications', JobApplicationController::class);
+/* End of Job Application Routes */
