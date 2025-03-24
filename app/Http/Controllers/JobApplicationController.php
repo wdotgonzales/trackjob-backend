@@ -12,12 +12,28 @@ class JobApplicationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(User $user)
+    public function index(User $user, Request $request)
     {
-        $jobApplications = $user->jobApplications()
-            ->with(['employmentType', 'workArrangement', 'jobApplicationStatus', 'reminder'])
-            ->orderBy('created_at', 'desc')
-            ->simplePaginate(5);
+        $query = $user->jobApplications()->with([
+            'employmentType',
+            'workArrangement',
+            'jobApplicationStatus',
+            'reminder'
+        ]);
+
+        if ($request->filled('job_application_status')) {
+            $query->where('job_application_status_id', $request->job_application_status);
+        }
+
+        if ($request->has('employment_type')) {
+            $query->where('employment_type_id', $request->employment_type);
+        }
+
+        if ($request->has('work_arrangement')) {
+            $query->where('work_arrangement_id', $request->work_arrangement);
+        }
+
+        $jobApplications = $query->orderBy('created_at', 'desc')->simplePaginate(5);
 
         return JobApplicationResource::collection($jobApplications);
     }
