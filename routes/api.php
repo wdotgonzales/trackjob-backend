@@ -36,5 +36,7 @@ Route::post('/forgotyourpassword/change-user-password', [ForgotYourPasswordContr
 
 
 /* Job Application Routes */
-Route::apiResource('user.job-applications', JobApplicationController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('user/job-applications', JobApplicationController::class);
+});
 /* End of Job Application Routes */

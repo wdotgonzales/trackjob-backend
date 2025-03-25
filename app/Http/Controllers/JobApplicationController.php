@@ -7,25 +7,15 @@ use App\Models\User;
 use App\Http\Resources\JobApplicationResource;
 use App\Models\JobApplication;
 
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Routing\Controllers\HasMiddleware;
-
-class JobApplicationController extends Controller implements HasMiddleware
+class JobApplicationController extends Controller
 {
-    use AuthorizesRequests;
-
-    public static function middleware(): array
-    {
-        return [
-            new Middleware(middleware: 'auth:sanctum'),
-        ];
-    }
     /**
      * Display a listing of the resource.
      */
-    public function index(User $user, Request $request)
+    public function index(Request $request)
     {
+        $user = User::find($request->user()->id);
+
         $query = $user->jobApplications()->with([
             'employmentType',
             'workArrangement',
@@ -80,7 +70,7 @@ class JobApplicationController extends Controller implements HasMiddleware
 
         $jobApplication = JobApplication::create([
             ...$validatedData,
-            'user_id' => 108 //temporary
+            'user_id' => $request->user()->id
         ]);
 
         return new JobApplicationResource($jobApplication);
@@ -89,10 +79,10 @@ class JobApplicationController extends Controller implements HasMiddleware
     /**
      * Display the specified resource.
      */
-    public function show(User $user, JobApplication $jobApplication)
+    public function show(Request $request, JobApplication $jobApplication)
     {
         // Ensure the job application belongs to the given user
-        if ($jobApplication->user_id !== $user->id) {
+        if ($jobApplication->user_id !== $request->user()->id) {
             abort(403, 'Unauthorized access to this job application.');
         }
 
@@ -112,10 +102,10 @@ class JobApplicationController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user, JobApplication $jobApplication)
+    public function update(Request $request, JobApplication $jobApplication)
     {
         // Ensure the job application belongs to the given user
-        if ($jobApplication->user_id !== $user->id) {
+        if ($jobApplication->user_id !== $request->user()->id) {
             abort(403, 'Unauthorized access to update this job application.');
         }
 
@@ -139,10 +129,10 @@ class JobApplicationController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user, JobApplication $jobApplication)
+    public function destroy(Request $request, JobApplication $jobApplication)
     {
         // Ensure the job application belongs to the given user
-        if ($jobApplication->user_id !== $user->id) {
+        if ($jobApplication->user_id !== $request->user()->id) {
             abort(403, 'Unauthorized access to delete this job application.');
         }
 
