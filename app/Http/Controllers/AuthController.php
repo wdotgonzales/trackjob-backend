@@ -12,8 +12,10 @@ use App\Mail\SendMail;
 use Illuminate\Support\Facades\Mail;
 
 
+
 class AuthController extends Controller
 {
+    
     public function checkIfEmailBelongsToAnAccount(Request $request)
     {
         $validatedData = $request->validate([
@@ -43,8 +45,6 @@ class AuthController extends Controller
                 ],
                 200
             );
-
-
         } catch (\Exception $e) {
             // Handle any unexpected errors during the query
             return response()->json(
@@ -98,7 +98,6 @@ class AuthController extends Controller
                 'otp' => $otp,
                 'message' => 'OTP generated successfully.'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'email' => $email,
@@ -179,4 +178,29 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function login(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+    
+        $user = User::where('email', $validatedData['email'])->first();
+    
+        if (!$user || !Hash::check($validatedData['password'], $user->password)) {
+            return response()->json([
+                'message' => 'The provided credentials are incorrect'
+            ], 401);
+        }
+    
+        $token = $user->createToken('api-token')->plainTextToken;
+    
+        return response()->json([
+            'token' => $token
+        ]);
+    }
+    
+
+    public function logout(Request $request) {}
 }

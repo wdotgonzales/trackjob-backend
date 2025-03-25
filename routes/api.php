@@ -14,13 +14,12 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
-Route::apiResource('user', UserController::class);
-
 // Change User's Profile Url And Full Name. (Logged In) 
-Route::put('/user/{id}/update-profile-url-and-full-name', [UserController::class, 'changeProfilePictureAndFullName']);
+Route::put('/user/update-profile-url-and-full-name', [UserController::class, 'changeProfilePictureAndFullName'])->middleware('auth:sanctum');
 
 /* -------- Auth Controller Routes -------- */
+Route::post('/auth/login', [AuthController::class, 'login']);
+
 Route::get('/auth/check-if-email-belongs-to-an-account', [AuthController::class, 'checkIfEmailBelongsToAnAccount']);
 Route::post('/auth/generate-otp', [AuthController::class, 'generateOtp']);
 Route::post('/auth/send-otp-to-email', [AuthController::class, 'sendOtpToEmail']);

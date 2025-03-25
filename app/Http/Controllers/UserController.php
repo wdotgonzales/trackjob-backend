@@ -6,8 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
-class UserController extends Controller
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
+
+
+class UserController extends Controller implements HasMiddleware
 {
+    use AuthorizesRequests;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(middleware: 'auth:sanctum', except: ['index', 'show']),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -117,10 +131,10 @@ class UserController extends Controller
         }
     }
 
-    public function changeProfilePictureAndFullName(Request $request, string $id)
+    public function changeProfilePictureAndFullName(Request $request)
     {
         try {
-            $user = User::find($id);
+            $user = User::find($request->user()->id);
 
             if (!$user) {
                 return response()->json(['message' => 'User not found'], 404);
@@ -147,5 +161,4 @@ class UserController extends Controller
             ], 500);
         }
     }
-
 }

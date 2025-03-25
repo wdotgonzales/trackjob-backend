@@ -7,8 +7,20 @@ use App\Models\User;
 use App\Http\Resources\JobApplicationResource;
 use App\Models\JobApplication;
 
-class JobApplicationController extends Controller
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
+
+class JobApplicationController extends Controller implements HasMiddleware
 {
+    use AuthorizesRequests;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(middleware: 'auth:sanctum'),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +47,10 @@ class JobApplicationController extends Controller
 
         $jobApplications = $query->orderBy('created_at', 'desc')->simplePaginate(5);
 
-        return JobApplicationResource::collection($jobApplications);
+        return response([
+            'message' => $request->user()->id,
+            'data' => JobApplicationResource::collection($jobApplications)
+        ]);
     }
 
     /**
@@ -135,5 +150,4 @@ class JobApplicationController extends Controller
 
         return response()->json(['message' => 'Job application deleted successfully.'], 200);
     }
-
 }
