@@ -10,7 +10,16 @@ class Reminder extends Model
 {
     use HasFactory;
 
-    public function jobApplication(): BelongsTo{
+    public function jobApplication(): BelongsTo
+    {
         return $this->belongsTo(JobApplication::class);
     }
+
+    protected $fillable = [
+        'job_application_id',
+        'title',
+        'description',
+        'isReminderUsed',
+        'reminder_date',
+    ];
 }
