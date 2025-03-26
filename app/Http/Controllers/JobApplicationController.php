@@ -37,10 +37,7 @@ class JobApplicationController extends Controller
 
         $jobApplications = $query->orderBy('created_at', 'desc')->simplePaginate(5);
 
-        return response([
-            'message' => $request->user()->id,
-            'data' => JobApplicationResource::collection($jobApplications)
-        ]);
+        return JobApplicationResource::collection($jobApplications);
     }
 
     /**
