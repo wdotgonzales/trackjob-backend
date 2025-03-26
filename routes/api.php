@@ -20,6 +20,7 @@ Route::put('/user/update-profile-url-and-full-name', [UserController::class, 'ch
 
 /* -------- Auth Controller Routes -------- */
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::get('/auth/check-if-email-belongs-to-an-account', [AuthController::class, 'checkIfEmailBelongsToAnAccount']);
 Route::post('/auth/generate-otp', [AuthController::class, 'generateOtp']);

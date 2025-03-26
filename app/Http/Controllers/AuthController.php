@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
-    
+
     public function checkIfEmailBelongsToAnAccount(Request $request)
     {
         $validatedData = $request->validate([
@@ -185,22 +185,29 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required'
         ]);
-    
+
         $user = User::where('email', $validatedData['email'])->first();
-    
+
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
             return response()->json([
                 'message' => 'The provided credentials are incorrect'
             ], 401);
         }
-    
+
         $token = $user->createToken('api-token')->plainTextToken;
-    
+
         return response()->json([
             'token' => $token
         ]);
     }
-    
 
-    public function logout(Request $request) {}
+
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ]);
+    }
 }
