@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\SubscriptionController;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
@@ -42,4 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
 /* Reminder Routes */
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('user/job-applications/{job_application}/reminders', ReminderController::class);
+});
+
+/* Subscription Routes */
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('user/purchase-subscription', [SubscriptionController::class, 'handleSubscription']);
 });
