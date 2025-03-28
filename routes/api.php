@@ -9,9 +9,6 @@ use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\SubscriptionController;
 
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SendMail;
-
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -29,11 +26,8 @@ Route::post('/auth/send-otp-to-email', [AuthController::class, 'sendOtpToEmail']
 Route::post('/auth/register', [AuthController::class, 'register']);
 
 /* -------- Forgot Your Password Routes -------- */
-Route::get('/forgotyourpassword/check-if-email-belongs-to-an-account', [ForgotYourPasswordController::class, 'checkIfEmailBelongsToAnAccount']);
-Route::post('/forgotyourpassword/generate-otp', [ForgotYourPasswordController::class, 'generateOtp']);
-Route::post('/forgotyourpassword/send-otp-to-email', [ForgotYourPasswordController::class, 'sendOtpToEmail']);
-Route::get('/forgotyourpassword/validate-otp', [ForgotYourPasswordController::class, 'validateOtp']);
-Route::post('/forgotyourpassword/change-user-password', [ForgotYourPasswordController::class, 'changeUserPassword']);
+Route::post('/forgot-your-password', [ForgotYourPasswordController::class, 'handleForgotYourPasssword']);
+Route::post('/validate-otp', [ForgotYourPasswordController::class, 'handleValidateOtp']);
 
 /* Job Application Routes */
 Route::middleware('auth:sanctum')->group(function () {

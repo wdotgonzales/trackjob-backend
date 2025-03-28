@@ -15,178 +15,128 @@ use Illuminate\Support\Facades\Hash;
 
 class ForgotYourPasswordController extends Controller
 {
-    public function checkIfEmailBelongsToAnAccount(Request $request)
+    public function handleForgotYourPasssword(Request $request)
     {
         $validatedData = $request->validate([
             'email' => 'required|email',
         ]);
 
-        $email = $validatedData['email'];
+        $user = $this->isEmailBelongToAnAccount($validatedData['email']);
 
-        try {
-            // Attempt to find a user by the provided email address
-            $user = User::where('email', $email)->first();
-
-            // If user is not found, return a 404 response
-            if (!$user) {
-                return response()->json(
-                    [
-                        'email' => $email,
-                        'user' => null,
-                        'message' => 'Email does not belong to any account.'
-                    ],
-                    404 // HTTP status code for Not Found
-                );
-            }
-
-            // If user is found, return user details using a resource wrapper
-            return response()->json(
-                [
-                    'email' => $email,
-                    'user' => new UserResource($user), // Format the user data using UserResource
-                    'message' => 'Email belongs to an account.'
-                ],
-                200 // HTTP status code for OK
-            );
-        } catch (\Exception $e) {
-            // Handle any unexpected errors during the query
-            return response()->json(
-                [
-                    'email' => $email,
-                    'user' => null,
-                    'message' => 'An error occurred while checking the email.',
-                    'error' => $e->getMessage()
-                ],
-                500 // HTTP status code for Internal Server Error
-            );
+        if (!$user) {
+            return response()->json([
+                'message' => 'Email does not belong to any account'
+            ], 404);
         }
+
+        return $this->generateOtp($user->email);
     }
 
-    public function generateOtp(Request $request)
+    public function isEmailBelongToAnAccount(string $email)
     {
-        $validatedData = $request->validate([
-            'email' => 'required|email',
+        return User::where('email', $email)->first();
+    }
+
+    public function generateOtp(string $email)
+    {
+        $existingOtp = VerificationCode::where('email', $email)->first();
+
+        if ($existingOtp) {
+            $existingOtp->delete();
+        }
+
+        $otp = random_int(100000, 999999);
+        $start_date = Carbon::now('Asia/Manila');
+        $expiration_date = $start_date->copy()->addMinutes(5);
+
+        // Insert into database
+        $verification_code = VerificationCode::create([
+            'email' => $email,
+            'otp' => $otp,
+            'expiration_date' => $expiration_date,
+            'start_date' => $start_date,
         ]);
 
-        $email = $validatedData['email'];
+        return $this->sendOtpEmail($verification_code->otp, $verification_code->email);
+    }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    public function sendOtpEmail(string $otp, string $email)
+    {
+        if (empty($otp)) {
             return response()->json([
-                'email' => $email,
-                'user' => null,
-                'message' => 'Invalid email format.'
+                'message' => 'OTP is missing',
             ], 400);
         }
 
-        try {
-            // Delete existing OTP if present
-            $existingOtp = VerificationCode::where('email', $email)->first();
-            if ($existingOtp) {
-                $existingOtp->delete();
-            }
-
-            // Generate new OTP and set expiration
-            $otp = random_int(100000, 999999);
-            $start_date = Carbon::now('Asia/Manila');
-            $expiration_date = $start_date->copy()->addMinutes(5);
-
-            // Insert into database
-            VerificationCode::create([
-                'email' => $email,
-                'otp' => $otp,
-                'expiration_date' => $expiration_date,
-                'start_date' => $start_date,
-            ]);
-
+        if (empty($email)) {
             return response()->json([
-                'email' => $email,
-                'otp' => $otp,
-                'message' => 'OTP generated successfully.'
-            ]);
+                'message' => 'Email is missing',
+            ], 400);
+        }
 
+        $subject = 'Forgot Your Password - OTP';
+        $title = 'Hello from TrackJob';
+        $message = 'Your OTP code is';
+
+        $data = [
+            'email' => $email,
+            'subject' => $subject,
+            'title' => $title,
+            'message' => $message,
+            'otp' => $otp
+        ];
+
+        try {
+            Mail::to($email)->send(new SendMail($data));
+            return response()->json(['message' => 'Otp send to email successfully!', 'email' => $email], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'email' => $email,
-                'user' => null,
-                'message' => 'Failed to generate OTP.',
+                'message' => 'Failed to send email.',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
-
-
-
-    public function sendOtpToEmail(Request $request)
+    function handleValidateOtp(Request $request)
     {
-        // Validate the incoming request data
-        $request->validate([
-            'email' => 'required|email',
-            'subject' => 'required|string',
-            'title' => 'required|string',
-            'message' => 'required|string',
-            'otp' => 'required|string|min:6|max:6',
-        ]);
-
-        // Prepare email data to be passed to the Mailable class
-        $data = [
-            'subject' => $request->subject,
-            'title' => $request->title,
-            'message' => $request->message,
-            'otp' => $request->otp
-        ];
-
-        try {
-            // Attempt to send the email using the SendMail Mailable class
-            Mail::to($request->email)->send(new SendMail($data));
-
-            // Return success response if email was sent successfully
-            return response()->json(['message' => 'Email sent successfully!', 'email' => $request->email], 200);
-        } catch (\Exception $e) {
-            // Return error response if sending email fails
-            return response()->json([
-                'message' => 'Failed to send email.',
-                'error' => $e->getMessage() // Include the error message for debugging
-            ], 500);
-        }
-    }
-
-
-    // -- REVISE THIS CHECK IF OTP IS STILL VALID via start_date and end_data.
-    public function validateOtp(Request $request)
-    {
-        // Validate the incoming request data
         $validatedData = $request->validate([
             'otp' => 'required|string|min:6|max:6',
             'email' => 'required|email',
         ]);
 
-        // Extract validated inputs
-        $otp = $validatedData['otp'];
-        $email = $validatedData['email'];
+        $verification_code = VerificationCode::where('otp', $validatedData['otp'])
+            ->where('email', $validatedData['email'])
+            ->first();
 
-        // Check if an OTP exists for the given email
-        $existingOtp = VerificationCode::where('email', $email)->first();
-
-        if (!$existingOtp) {
-            return response()->json(['message' => 'Invalid OTP or email.'], 400);
+        if (!$verification_code) {
+            return response()->json([
+                'message' => 'OTP is incorrect',
+            ], 404);
         }
 
-        // Validate if the OTP matches the one in the database
-        if ($existingOtp->otp !== $otp) {
-            return response()->json(['message' => 'Invalid OTP.'], 400);
+        if ($this->isVerificationCodeExpired($verification_code)) {
+            return response()->json([
+                'message' => 'OTP is expired'
+            ], 400);
         }
 
-        if (Carbon::now()->setTimezone('Asia/Manila')->greaterThan(Carbon::parse($existingOtp->expiration_date)->setTimezone('Asia/Manila'))) {
-            return response()->json(['message' => 'OTP has expired.'], 400);
-        }
+        $verification_code->delete();
 
         return response()->json([
-            'message' => 'OTP is valid.',
-            'otp' => $otp,
-            'email' => $email,
-
+            'message' => "You can now change user's password",
+            'email' => $validatedData['email']
         ], 200);
+    }
+
+    function isVerificationCodeExpired(VerificationCode $verification_code)
+    {
+        $current_date = Carbon::now('Asia/Manila');
+        $expiration_date = Carbon::parse($verification_code->expiration_date);
+
+        if ($current_date->greaterThanOrEqualTo($expiration_date)) {
+            return true;
+        }
+        return false;
     }
 
     public function changeUserPassword(Request $request)
@@ -224,7 +174,4 @@ class ForgotYourPasswordController extends Controller
             ], 500);
         }
     }
-
-
-
 }
