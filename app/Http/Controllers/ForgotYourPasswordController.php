@@ -97,7 +97,7 @@ class ForgotYourPasswordController extends Controller
         }
     }
 
-    function handleValidateOtp(Request $request)
+    public function handleValidateOtp(Request $request)
     {
         $validatedData = $request->validate([
             'otp' => 'required|string|min:6|max:6',
@@ -128,7 +128,7 @@ class ForgotYourPasswordController extends Controller
         ], 200);
     }
 
-    function isVerificationCodeExpired(VerificationCode $verification_code)
+    public function isVerificationCodeExpired(VerificationCode $verification_code)
     {
         $current_date = Carbon::now('Asia/Manila');
         $expiration_date = Carbon::parse($verification_code->expiration_date);
