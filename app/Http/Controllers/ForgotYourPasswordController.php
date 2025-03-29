@@ -139,39 +139,33 @@ class ForgotYourPasswordController extends Controller
         return false;
     }
 
-    public function changeUserPassword(Request $request)
+    public function handleChangeUserPassword(Request $request)
     {
-        try {
-            $validatedData = $request->validate([
-                'new_password' => 'required|string|min:8',
-                'email' => 'required|email',
-            ]);
 
-            $user = User::where('email', $validatedData['email'])->first();
+        $validatedData = $request->validate([
+            'new_password' => 'required|string|min:8',
+            'email' => 'required|email',
+        ]);
 
-            if (!$user) {
-                return response()->json([
-                    'email' => $validatedData['email'],
-                    'user' => null,
-                    'message' => 'Email does not belong to any account.'
-                ], 404);
-            }
+        $user = User::where('email', $validatedData['email'])->first();
 
-            $new_password = Hash::make($validatedData['new_password']);
-
-            $user->update([
-                'password' => $new_password,
-            ]);
-
+        if (!$user) {
             return response()->json([
-                'message' => "User's password is successfully changed",
-                'user' => new UserResource($user)
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Something went wrong. Please try again.',
-                'error' => $e->getMessage()
-            ], 500);
+                'email' => $validatedData['email'],
+                'user' => null,
+                'message' => 'Email does not belong to any account.'
+            ], 404);
         }
+
+        $new_password = Hash::make($validatedData['new_password']);
+
+        $user->update([
+            'password' => $new_password,
+        ]);
+
+        return response()->json([
+            'message' => "User's password is successfully changed",
+            'user' => new UserResource($user)
+        ], 201);
     }
 }

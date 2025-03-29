@@ -27,7 +27,8 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 
 /* -------- Forgot Your Password Routes -------- */
 Route::post('/forgot-your-password', [ForgotYourPasswordController::class, 'handleForgotYourPasssword']);
-Route::post('/validate-otp', [ForgotYourPasswordController::class, 'handleValidateOtp']);
+Route::post('/forgot-your-password/validate-otp', [ForgotYourPasswordController::class, 'handleValidateOtp']);
+Route::post('/forgot-your-password/change-password', [ForgotYourPasswordController::class, 'handleChangeUserPassword']);
 
 /* Job Application Routes */
 Route::middleware('auth:sanctum')->group(function () {
