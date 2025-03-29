@@ -20,10 +20,10 @@ Route::put('/user/update-profile-url-and-full-name', [UserController::class, 'ch
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::get('/auth/check-if-email-belongs-to-an-account', [AuthController::class, 'checkIfEmailBelongsToAnAccount']);
-Route::post('/auth/generate-otp', [AuthController::class, 'generateOtp']);
-Route::post('/auth/send-otp-to-email', [AuthController::class, 'sendOtpToEmail']);
-Route::post('/auth/register', [AuthController::class, 'register']);
+/* Register */
+Route::post('/register/otp-process', [AuthController::class, 'handleOtpProcess']);
+Route::post('/register/validate-otp', [AuthController::class, 'handleValidateOtp']);
+Route::post('/register', [AuthController::class, 'handleRegister']);
 
 /* -------- Forgot Your Password Routes -------- */
 Route::post('/forgot-your-password', [ForgotYourPasswordController::class, 'handleForgotYourPasssword']);
