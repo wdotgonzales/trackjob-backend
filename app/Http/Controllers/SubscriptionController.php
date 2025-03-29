@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
-    public function handleSubscription(Request $request)
+    public function handlePurchaseSubscription(Request $request)
     {
         $validatedData = $request->validate([
             'subscription_plan_id' => 'required|integer',
@@ -92,5 +92,27 @@ class SubscriptionController extends Controller
             'message' => "Subscription's expiration date extended successfully.",
             'data' => $subscription
         ], 201);
+    }
+
+    public function handleSubscriptionChecker(Request $request)
+    {
+        $subscription = $this->checkIfUserHasExistingValidSubscription($request->user()->id);
+
+        if (!$subscription) {
+            return response()->json([
+                'message' => 'User has no existing valid subscription'
+            ], 403);
+        }
+
+        if ($this->isSubscriptionExpired($subscription)) {
+            return response()->json([
+                'message' => "User's subscription has already expired"
+            ], 403);
+        }
+
+        return response()->json([
+            'message' => "User's has an existing valid subscription",
+            'data' => $subscription
+        ], 200);
     }
 }
