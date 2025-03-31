@@ -78,11 +78,6 @@ class JobApplicationController extends Controller
      */
     public function show(Request $request, JobApplication $jobApplication)
     {
-        // Ensure the job application belongs to the given user
-        if ($jobApplication->user_id !== $request->user()->id) {
-            abort(403, 'Unauthorized access to this job application.');
-        }
-
         return new JobApplicationResource(
             $jobApplication->load(['employmentType', 'workArrangement', 'jobApplicationStatus', 'reminder'])
         );
@@ -101,11 +96,6 @@ class JobApplicationController extends Controller
      */
     public function update(Request $request, JobApplication $jobApplication)
     {
-        // Ensure the job application belongs to the given user
-        if ($jobApplication->user_id !== $request->user()->id) {
-            abort(403, 'Unauthorized access to update this job application.');
-        }
-
         $validatedData = $request->validate([
             'position_title' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
@@ -128,13 +118,7 @@ class JobApplicationController extends Controller
      */
     public function destroy(Request $request, JobApplication $jobApplication)
     {
-        // Ensure the job application belongs to the given user
-        if ($jobApplication->user_id !== $request->user()->id) {
-            abort(403, 'Unauthorized access to delete this job application.');
-        }
-
         $jobApplication->delete();
-
         return response()->json(['message' => 'Job application deleted successfully.'], 200);
     }
 }

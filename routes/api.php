@@ -32,7 +32,14 @@ Route::post('/forgot-your-password/change-password', [ForgotYourPasswordControll
 
 /* Job Application Routes */
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('user/job-applications', JobApplicationController::class);
+    Route::get('user/job-applications', [JobApplicationController::class, "index"]);
+    Route::post('user/job-applications', [JobApplicationController::class, "store"]);
+});
+
+Route::middleware(['auth:sanctum', 'job.application.owner.check'])->group(function () {
+    Route::get('user/job-applications/{job_application}', [JobApplicationController::class, 'show']);
+    Route::put('user/job-applications/{job_application}', [JobApplicationController::class, 'update']);
+    Route::delete('user/job-applications/{job_application}', [JobApplicationController::class, 'destroy']);
 });
 
 /* Reminder Routes */
