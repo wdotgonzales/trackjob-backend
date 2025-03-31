@@ -42,6 +42,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 /* Subscription Routes */
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user/check-if-subscription-exist', [SubscriptionController::class, 'handleSubscriptionChecker']);
+    // Route::get('/user/check-if-subscription-exist', [SubscriptionController::class, 'handleSubscriptionChecker']);
     Route::post('/user/purchase-subscription', [SubscriptionController::class, 'handlePurchaseSubscription']);
+});
+
+Route::middleware(['auth:sanctum', 'subscription.check'])->group(function () {
+    Route::get('/user/subscription', [SubscriptionController::class, 'subscription']);
 });

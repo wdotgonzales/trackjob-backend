@@ -94,25 +94,11 @@ class SubscriptionController extends Controller
         ], 201);
     }
 
-    public function handleSubscriptionChecker(Request $request)
+    public function subscription(Request $request)
     {
-        $subscription = $this->checkIfUserHasExistingValidSubscription($request->user()->id);
-
-        if (!$subscription) {
-            return response()->json([
-                'message' => 'User has no existing valid subscription'
-            ], 403);
-        }
-
-        if ($this->isSubscriptionExpired($subscription)) {
-            return response()->json([
-                'message' => "User's subscription has already expired"
-            ], 403);
-        }
-
-        return response()->json([
-            'message' => "User's has an existing valid subscription",
-            'data' => $subscription
-        ], 200);
-    }
+        return [
+            'data' => $this->checkIfUserHasExistingValidSubscription($request->user()->id)
+        ];
+    }   
 }
+    
