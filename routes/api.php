@@ -43,7 +43,7 @@ Route::middleware(['auth:sanctum', 'job.application.owner.check'])->group(functi
 });
 
 /* Reminder Routes */
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'reminder.owner.check'])->group(function () {
     Route::apiResource('user/job-applications/{job_application}/reminders', ReminderController::class);
 });
 
