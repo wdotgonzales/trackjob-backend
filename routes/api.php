@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\StatisticsController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -49,10 +50,9 @@ Route::middleware(['auth:sanctum', 'reminder.owner.check'])->group(function () {
 
 /* Subscription Routes */
 Route::middleware('auth:sanctum')->group(function () {
-    // Route::get('/user/check-if-subscription-exist', [SubscriptionController::class, 'handleSubscriptionChecker']);
     Route::post('/user/purchase-subscription', [SubscriptionController::class, 'handlePurchaseSubscription']);
 });
 
 Route::middleware(['auth:sanctum', 'subscription.check'])->group(function () {
-    Route::get('/user/subscription', [SubscriptionController::class, 'subscription']);
+    Route::get('/user/statistics', [StatisticsController::class, 'handleStatistics']);
 });
