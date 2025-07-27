@@ -22,6 +22,11 @@ Copy .env.dev from the example
 cp .env.dev.example .env.dev
 ```
 
+Go back to root directory
+```bash
+cd ..
+```
+
 Setup .env.dev credentials
 
 ```bash
