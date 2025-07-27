@@ -23,25 +23,25 @@ python3 -m venv venv
 
 #### Activate virtual environment:
 
-**For Linux/macOS:**
-```bash
-source venv/bin/activate
-```
+>**For Linux/macOS:**
+>```bash
+>source venv/bin/activate
+>```
 
-**For Windows (Command Prompt):**
-```cmd
-venv\Scripts\activate.bat
-```
+>**For Windows (Command Prompt):**
+>```cmd
+>venv\Scripts\activate.bat
+>```
 
-**For Windows (PowerShell):**
-```powershell
-venv\Scripts\Activate.ps1
-```
+>**For Windows (PowerShell):**
+>```powershell
+>venv\Scripts\Activate.ps1
+>```
 
-**For Windows (Git Bash):**
-```bash
-venv\Scripts\Activate
-```
+>**For Windows (Git Bash):**
+>```bash
+>venv\Scripts\Activate
+>```
 
 >> **Note:** If you encounter execution policy issues on Windows PowerShell, you may need to run:
 >> ```powershell
