@@ -1,0 +1,29 @@
+# Ignore all .env files except the example
+.env
+.env.*
+!.env.dev.example
+
+# Ignore Docker files except the example
+docker-compose.yml
+!docker-compose.example.yml
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# VSCode or other editor folders
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
