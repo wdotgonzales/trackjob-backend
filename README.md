@@ -38,6 +38,11 @@ venv\Scripts\activate.bat
 venv\Scripts\Activate.ps1
 ```
 
+**For Windows (Git Bash):**
+```bash
+venv\Scripts\Activate
+```
+
 > **Note:** If you encounter execution policy issues on Windows PowerShell, you may need to run:
 > ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
