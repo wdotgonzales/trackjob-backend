@@ -43,16 +43,16 @@ venv\Scripts\Activate.ps1
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 > ```
 
-### 4. Copy .env.dev from the example
-
-```bash
-cp .env.dev.example .env.dev
-```
-
-### 5. Go back to root directory
+### 4. Go back to root directory
 
 ```bash
 cd ..
+```
+
+### 5. Copy .env.dev from the example
+
+```bash
+cp .env.dev.example .env.dev
 ```
 
 ### 6. Setup .env.dev credentials
