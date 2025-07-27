@@ -40,7 +40,7 @@ python3 -m venv venv
 
 >**For Windows (Git Bash):**
 >```bash
->source venv\Scripts\Activate
+>source venv\Scripts\activate
 >```
 
 >> **Note:** If you encounter execution policy issues on Windows PowerShell, you may need to run:
