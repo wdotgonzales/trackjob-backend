@@ -1,38 +1,63 @@
-
-# Trackjob Backend API
-
-A  backend service for the TrackJob Mobile Application created using Django REST Framework and MySQL.
-
+# TrackJob Backend Installation Guide
 
 ## Installation
 
-Clone the repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/wdotgonzales/trackjob-backend.git
 ```
-Go to project directory
+
+### 2. Go to project directory
+
 ```bash
 cd trackjob-backend/
 ```
-Create and activate a virtual environment inside the app/ directory
+
+### 3. Create and activate a virtual environment inside the app/ directory
 
 ```bash
 cd app/
 python3 -m venv venv
+```
+
+#### Activate virtual environment:
+
+**For Linux/macOS:**
+```bash
 source venv/bin/activate
 ```
-Copy .env.dev from the example
+
+**For Windows (Command Prompt):**
+```cmd
+venv\Scripts\activate.bat
+```
+
+**For Windows (PowerShell):**
+```powershell
+venv\Scripts\Activate.ps1
+```
+
+> **Note:** If you encounter execution policy issues on Windows PowerShell, you may need to run:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+
+### 4. Copy .env.dev from the example
+
 ```bash
 cp .env.dev.example .env.dev
 ```
 
-Go back to root directory
+### 5. Go back to root directory
+
 ```bash
 cd ..
 ```
 
-Setup .env.dev credentials
+### 6. Setup .env.dev credentials
+
+Edit the `.env.dev` file with your credentials:
 
 ```bash
 # Django settings
@@ -49,15 +74,18 @@ SQL_HOST=db
 SQL_PORT=3306
 DATABASE=mysql
 ```
-Copy docker-compose.yml from the example
+
+### 7. Copy docker-compose.yml from the example
 
 ```bash
 cp docker-compose.example.yml docker-compose.yml
 ```
 
-Setup docker-compose.yml credentials
+### 8. Setup docker-compose.yml credentials
 
-```bash
+Edit the `docker-compose.yml` file with your database credentials:
+
+```yaml
 services:
   web:
     build: ./app
@@ -78,22 +106,24 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql/
     environment:
-      - MYSQL_DATABASE=your_db_name_here <!-- Use the same database name as in .env.dev -->
-      - MYSQL_USER=your_db_user_here <!-- Use the same user as in .env.dev -->
-      - MYSQL_PASSWORD=your_db_password_here <!-- Use the same password as in .env.dev -->
-      - MYSQL_ROOT_PASSWORD=your_root_password_here <!-- Use the same root password as in .env.dev -->
+      - MYSQL_DATABASE=your_db_name_here # Use the same database name as in .env.dev
+      - MYSQL_USER=your_db_user_here # Use the same user as in .env.dev
+      - MYSQL_PASSWORD=your_db_password_here # Use the same password as in .env.dev
+      - MYSQL_ROOT_PASSWORD=your_root_password_here # Set a secure root password
     
-      
 volumes:
   mysql_data:
-
 ```
-Build and run the containers
+
+### 9. Build and run the containers
+
 ```bash
 docker-compose -f docker-compose.yml up -d --build
 ```
 
-Access the app in your browser at:
-```bash
+### 10. Access the application
+
+Open your browser and go to:
+```
 http://localhost:8080/
 ```
