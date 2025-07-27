@@ -1,4 +1,9 @@
 
+# Trackjob Backend API
+
+A  backend service for the TrackJob Mobile Application created using Django REST Framework and MySQL.
+
+
 ## Installation
 
 Clone the repository
