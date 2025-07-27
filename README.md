@@ -43,10 +43,10 @@ venv\Scripts\Activate.ps1
 venv\Scripts\Activate
 ```
 
-> **Note:** If you encounter execution policy issues on Windows PowerShell, you may need to run:
-> ```powershell
-> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-> ```
+>> **Note:** If you encounter execution policy issues on Windows PowerShell, you may need to run:
+>> ```powershell
+>> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+>> ```
 
 ### 4. Go back to root directory
 
