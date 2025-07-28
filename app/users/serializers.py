@@ -1,6 +1,10 @@
 from rest_framework import serializers
 from .models import User
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth import authenticate
+
 # Serializer for registering a user with password confirmation
 class UserSerializer(serializers.ModelSerializer):
     repeat_password = serializers.CharField(write_only=True)
@@ -39,3 +43,26 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)                 # Hash the password
         user.save()
         return user
+    
+# Serializer for custom token obtain pair
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    # Override the method to include email in the token
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['email'] = user.email
+        return token
+    
+    # Override the validate method to authenticate user
+    def validate(self, attrs):
+        email = attrs.get("email")
+        password = attrs.get("password")
+
+        user = authenticate(username=email, password=password)
+        self.authenticated_user = user  
+        if not user:
+            return {}
+
+        return super().validate(attrs)
+
+
+    
