@@ -40,3 +40,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'tbl_user'
+
+
+class VerificationCode(models.Model):
+    id = models.AutoField(primary_key=True)
+    email = models.EmailField(max_length=255)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField()
+    expires_at = models.DateTimeField()
+    
+    def __str__(self):
+        return f'{self.email} - {self.code}'
+
+    class Meta:
+        db_table = 'tbl_verification_code'
