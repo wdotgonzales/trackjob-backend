@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, VerificationCode
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
@@ -65,4 +65,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return super().validate(attrs)
 
 
+class VerificationCodeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for email verification codes.
     
+    Handles serialization/deserialization of verification codes sent 
+    during user registration process.
+    """
+    
+    class Meta:
+        model = VerificationCode
+        fields = ['email', 'code', 'created_at', 'expires_at']
