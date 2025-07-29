@@ -76,3 +76,74 @@ class VerificationCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = VerificationCode
         fields = ['email', 'code', 'created_at', 'expires_at']
+        
+        
+class ResetPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password reset functionality.
+    
+    Validates password reset data and updates user password.
+    """
+    email = serializers.EmailField()
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        """
+        Validate password reset data.
+        
+        Checks password requirements:
+        - Minimum 8 characters
+        - No spaces
+        - Passwords match
+        
+        Returns:
+            dict: Validated attributes
+            
+        Raises:
+            ValidationError: If validation fails
+        """
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+        email = attrs.get('email')
+        
+        # Check for required fields
+        if not new_password:
+            raise serializers.ValidationError('New password is required.')
+        
+        if not confirm_password:
+            raise serializers.ValidationError('Password confirmation is required.')
+        
+        if not email:
+            raise serializers.ValidationError('Email is required.')
+
+        # Check if passwords match
+        if new_password != confirm_password:
+            raise serializers.ValidationError("Passwords do not match.")
+
+        # Check minimum length
+        if len(new_password) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters long.")
+
+        # Check for whitespace
+        if any(char.isspace() for char in new_password):
+            raise serializers.ValidationError("Password must not contain any spaces.")
+
+        return attrs
+
+    def save(self, **kwargs):
+        """
+        Update user password with validated data.
+        
+        Raises:
+            ValidationError: If user doesn't exist
+        """
+        email = self.validated_data['email']
+        new_password = self.validated_data['new_password']
+
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)  # Hash password before saving
+            user.save()
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User with this email does not exist.")
