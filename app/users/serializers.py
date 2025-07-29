@@ -128,6 +128,10 @@ class ResetPasswordSerializer(serializers.Serializer):
         # Check for whitespace
         if any(char.isspace() for char in new_password):
             raise serializers.ValidationError("Password must not contain any spaces.")
+        
+        # Check if user exists
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("User with this email does not exist.")
 
         return attrs
 
@@ -135,15 +139,11 @@ class ResetPasswordSerializer(serializers.Serializer):
         """
         Update user password with validated data.
         
-        Raises:
-            ValidationError: If user doesn't exist
+        Note: User existence already validated in validate() method
         """
         email = self.validated_data['email']
         new_password = self.validated_data['new_password']
 
-        try:
-            user = User.objects.get(email=email)
-            user.set_password(new_password)  # Hash password before saving
-            user.save()
-        except User.DoesNotExist:
-            raise serializers.ValidationError("User with this email does not exist.")
+        user = User.objects.get(email=email)
+        user.set_password(new_password) 
+        user.save()
