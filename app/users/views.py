@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User, VerificationCode
-from .serializers import UserSerializer
+from .serializers import UserSerializer, ResetPasswordSerializer
 from rest_framework.viewsets import ViewSet
 from rest_framework import status
 from .responses import CustomResponse 
@@ -272,3 +272,36 @@ class DecodeTokenView(APIView):
                 message="Invalid token",
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+            
+class ResetPasswordView(APIView):
+    """API view for resetting user passwords."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        """
+        Reset user password with new credentials.
+        
+        Args:
+            request: Contains 'email', 'new_password', and 'confirm_password'
+            
+        Returns:
+            CustomResponse: Success message or validation error
+        """
+        serializer = ResetPasswordSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return CustomResponse(
+                data={},
+                message="Password has been reset successfully.",
+                status_code=status.HTTP_200_OK
+            )
+            
+        # Return first validation error
+        first_error_message = next(iter(serializer.errors.values()))[0]
+
+        return CustomResponse(
+            data={},
+            message=first_error_message,
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
