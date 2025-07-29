@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserViewSet, RegisterViewSet, CustomTokenObtainPairView, DecodeTokenView
+from .views import UserViewSet, RegisterViewSet, CustomTokenObtainPairView, DecodeTokenView, ResetPasswordView
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -11,5 +11,7 @@ urlpatterns = [
     path('decode-token/', DecodeTokenView.as_view(), name='decode_token'),
     
     path('send-verification-code/', RegisterViewSet.as_view({'post': 'send_verification_code'}), name='send-verification-code'),
-    path('verify-code/',  RegisterViewSet.as_view({'post': 'verify_code'}), name='verify-code')
+    path('verify-code/',  RegisterViewSet.as_view({'post': 'verify_code'}), name='verify-code'),
+    
+    path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
 ]
