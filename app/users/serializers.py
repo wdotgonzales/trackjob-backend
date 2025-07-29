@@ -5,6 +5,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth import authenticate
 
+from django.utils import timezone
+
+
 # Serializer for registering a user with password confirmation
 class UserSerializer(serializers.ModelSerializer):
     repeat_password = serializers.CharField(write_only=True)
@@ -48,6 +51,10 @@ class UserSerializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     # Override the method to include email in the token
     def get_token(cls, user):
+        # Update last login time
+        user.last_login = timezone.now()
+        user.save(update_fields=['last_login'])
+        
         token = super().get_token(user)
         token['email'] = user.email
         return token
