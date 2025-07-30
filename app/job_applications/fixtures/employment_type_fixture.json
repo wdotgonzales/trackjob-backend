@@ -1,0 +1,44 @@
+[
+  {
+    "model": "job_applications.employmenttype",
+    "fields": {
+      "label": "Full-time",
+      "description": "Permanent, full-time work"
+    }
+  },
+  {
+    "model": "job_applications.employmenttype",
+    "fields": {
+      "label": "Part-time",
+      "description": "Fewer hours than full-time"
+    }
+  },
+  {
+    "model": "job_applications.employmenttype",
+    "fields": {
+      "label": "Contract",
+      "description": "Fixed-term contractual employment"
+    }
+  },
+  {
+    "model": "job_applications.employmenttype",
+    "fields": {
+      "label": "Internship",
+      "description": "Internship or student position"
+    }
+  },
+  {
+    "model": "job_applications.employmenttype",
+    "fields": {
+      "label": "Temporary",
+      "description": "Short-term temporary work"
+    }
+  },
+  {
+    "model": "job_applications.employmenttype",
+    "fields": {
+      "label": "Freelance",
+      "description": "Project-based freelance job"
+    }
+  }
+]

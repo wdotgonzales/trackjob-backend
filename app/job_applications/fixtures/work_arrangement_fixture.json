@@ -1,0 +1,23 @@
+[
+  {
+    "model": "job_applications.workarrangement",
+    "fields": {
+      "label": "On-site",
+      "description": "Work at the company’s office"
+    }
+  },
+  {
+    "model": "job_applications.workarrangement",
+    "fields": {
+      "label": "Remote",
+      "description": "Work from home or any location"
+    }
+  },
+  {
+    "model": "job_applications.workarrangement",
+    "fields": {
+      "label": "Hybrid",
+      "description": "Split between remote and on-site"
+    }
+  }
+]

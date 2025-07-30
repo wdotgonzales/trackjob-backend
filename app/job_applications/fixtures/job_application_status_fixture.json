@@ -1,0 +1,58 @@
+[
+  {
+    "model": "job_applications.jobapplicationstatus",
+    "fields": {
+      "label": "Applied",
+      "description": "You submitted your application."
+    }
+  },
+  {
+    "model": "job_applications.jobapplicationstatus",
+    "fields": {
+      "label": "Under Review",
+      "description": "Your application is being evaluated."
+    }
+  },
+  {
+    "model": "job_applications.jobapplicationstatus",
+    "fields": {
+      "label": "Interview Scheduled",
+      "description": "An interview has been scheduled."
+    }
+  },
+  {
+    "model": "job_applications.jobapplicationstatus",
+    "fields": {
+      "label": "Offer Received",
+      "description": "You received a job offer."
+    }
+  },
+  {
+    "model": "job_applications.jobapplicationstatus",
+    "fields": {
+      "label": "Accepted Offer",
+      "description": "You accepted the offer."
+    }
+  },
+  {
+    "model": "job_applications.jobapplicationstatus",
+    "fields": {
+      "label": "Rejected",
+      "description": "You were not selected for the position."
+    }
+  },
+  {
+    "model": "job_applications.jobapplicationstatus",
+    "fields": {
+      "label": "Ghosted",
+      "description": "No response from the employer after follow-ups."
+    }
+  },
+  {
+    "model": "job_applications.jobapplicationstatus",
+    "fields": {
+      "label": "Closed/Withdraw",
+      "description": "You withdrew or the company closed the job opening."
+    }
+  }
+]
