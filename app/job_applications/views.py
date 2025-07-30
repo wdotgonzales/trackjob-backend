@@ -7,6 +7,12 @@ from rest_framework import viewsets, status
 
 from rest_framework.exceptions import ValidationError, PermissionDenied, NotFound
 
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+
+# CACHE TIME TO LIVE (5 minutes)
+CACHE_TTL = 60 * 5 
+
 class JobApplicationViewSet(viewsets.ModelViewSet):
     """
     ViewSet for managing job applications.
@@ -63,6 +69,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             status_code=status.HTTP_201_CREATED
         )
 
+    @method_decorator(cache_page(CACHE_TTL, key_prefix="job_application_detail"))
     def retrieve(self, request, *args, **kwargs):
         """Retrieve a single job application with permission check."""
         try:
@@ -161,6 +168,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             status_code=status.HTTP_204_NO_CONTENT
         )
 
+    @method_decorator(cache_page(CACHE_TTL, key_prefix="job_application_list"))
     def list(self, request, *args, **kwargs):
         """
         List job applications for the current user with optional filtering.
