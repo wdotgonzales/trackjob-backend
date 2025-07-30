@@ -23,6 +23,10 @@ services:
       - MYSQL_PASSWORD=your_db_password_here <!-- Use the same password as in .env.dev -->
       - MYSQL_ROOT_PASSWORD=your_root_password_here <!-- Use the same root password as in .env.dev -->
     
-      
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
 volumes:
   mysql_data:
