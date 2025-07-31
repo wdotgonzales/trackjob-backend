@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from django.utils import timezone
 
 # Create your models here.
 
@@ -62,11 +63,11 @@ class JobApplication(models.Model):
 
 class Reminder(models.Model):
     id = models.AutoField(primary_key=True)
-    job_application_id = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='reminders')
+    job_application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='reminders')
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    isReminderUsed = models.BooleanField(default=False)
-    time_set = models.DateTimeField()
+    is_enabled = models.BooleanField(default=True)
+    reminder_datetime = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     
