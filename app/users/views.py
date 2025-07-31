@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User, VerificationCode
-from .serializers import UserSerializer, ResetPasswordSerializer
+from .serializers import UserSerializer, ResetPasswordSerializer, ChangeProfileUrlSerializer
 from rest_framework.viewsets import ViewSet
 from rest_framework import status
 from .responses import CustomResponse 
@@ -298,6 +298,28 @@ class ResetPasswordView(APIView):
             )
             
         # Return first validation error
+        first_error_message = next(iter(serializer.errors.values()))[0]
+
+        return CustomResponse(
+            data={},
+            message=first_error_message,
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
+        
+class ChangeProfileUrlView(APIView):
+    def post(self, request):
+        user = request.user  
+
+        serializer = ChangeProfileUrlSerializer(user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return CustomResponse(
+                data={'profile_url': serializer.data['profile_url']},
+                message="Profile URL updated successfully.",
+                status_code=status.HTTP_200_OK
+            )
+
         first_error_message = next(iter(serializer.errors.values()))[0]
 
         return CustomResponse(
