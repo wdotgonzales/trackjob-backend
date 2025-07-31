@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserViewSet, RegisterViewSet, CustomTokenObtainPairView, DecodeTokenView, ResetPasswordView
+from .views import UserViewSet, RegisterViewSet, CustomTokenObtainPairView, DecodeTokenView, ResetPasswordView, ChangeProfileUrlView
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -14,4 +14,6 @@ urlpatterns = [
     path('verify-code/',  RegisterViewSet.as_view({'post': 'verify_code'}), name='verify-code'),
     
     path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
+    
+    path('change-profile-url/', ChangeProfileUrlView.as_view(), name='change-profile-url')
 ]
