@@ -154,3 +154,20 @@ class ResetPasswordSerializer(serializers.Serializer):
         user = User.objects.get(email=email)
         user.set_password(new_password) 
         user.save()
+
+
+class ChangeProfileUrlSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['profile_url']
+
+    def validate(self, attrs):
+        profile_url = attrs.get('profile_url', '').strip()
+
+        if profile_url == '':
+            raise serializers.ValidationError("Profile URL cannot be empty.")
+
+        if not profile_url.startswith(('http://', 'https://')):
+            raise serializers.ValidationError("Profile URL must start with 'http://' or 'https://'.")
+
+        return attrs
