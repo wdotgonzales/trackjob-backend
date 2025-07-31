@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import JobApplication
-from .serializers import JobApplicationCreateSerializer, JobApplicationViewSerializer
+from .models import JobApplication, Reminder
+from .serializers import JobApplicationCreateSerializer, JobApplicationViewSerializer, ReminderSerializer
 from .responses import CustomResponse
 from .permissions import IsOwner
 from rest_framework import viewsets, status
@@ -243,4 +243,132 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             },
             message="All job applications",
             status_code=status.HTTP_200_OK
+        )
+        
+class ReminderViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing reminders associated with job applications.
+    
+    Provides CRUD operations for reminders that belong to specific job applications.
+    Only allows users to access reminders for their own job applications.
+    """
+    serializer_class = ReminderSerializer
+
+    def get_queryset(self):
+        """
+        Filter reminders by job application and ensure user ownership.
+        
+        Returns:
+            QuerySet: Reminders filtered by job_application_pk and current user
+        """
+        job_application_id = self.kwargs.get('job_application_pk')
+        return Reminder.objects.filter(
+            job_application__id=job_application_id,
+            job_application__user=self.request.user
+        )
+
+    def perform_create(self, serializer):
+        """
+        Associate the reminder with the specified job application.
+        
+        Args:
+            serializer: ReminderSerializer instance
+            
+        Raises:
+            NotFound: If job application doesn't exist or doesn't belong to user
+        """
+        job_application_id = self.kwargs.get('job_application_pk')
+        try:
+            job_application = JobApplication.objects.get(id=job_application_id, user=self.request.user)
+        except JobApplication.DoesNotExist:
+            raise NotFound("Job application not found.")
+        serializer.save(job_application=job_application)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new reminder with custom error handling.
+        
+        Returns:
+            CustomResponse: Success/error response with appropriate message
+        """
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            missing_fields = [
+                field for field, errors in serializer.errors.items()
+                if any(err.code == 'required' for err in errors)
+            ]
+            if missing_fields:
+                return CustomResponse(
+                    data=None,
+                    message=f"Missing fields: {', '.join(missing_fields)}",
+                    status_code=status.HTTP_400_BAD_REQUEST
+                )
+            return CustomResponse(
+                data=None,
+                message="Invalid data",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        self.perform_create(serializer)
+        view_serializer = self.get_serializer(serializer.instance)
+        return CustomResponse(
+            data=view_serializer.data,
+            message="Reminder created successfully",
+            status_code=status.HTTP_201_CREATED
+        )
+
+    def list(self, request, *args, **kwargs):
+        """Get all reminders for the specified job application."""
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return CustomResponse(
+            data=serializer.data,
+            message="Reminders fetched successfully",
+            status_code=status.HTTP_200_OK
+        )
+
+    def retrieve(self, request, *args, **kwargs):
+        """Get a specific reminder by ID."""
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return CustomResponse(
+            data=serializer.data,
+            message="Reminder retrieved successfully",
+            status_code=status.HTTP_200_OK
+        )
+
+    def update(self, request, *args, **kwargs):
+        """Update all fields of a reminder (PUT request)."""
+        partial = False
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return CustomResponse(
+            data=serializer.data,
+            message="Reminder updated successfully",
+            status_code=status.HTTP_200_OK
+        )
+
+    def partial_update(self, request, *args, **kwargs):
+        """Update specific fields of a reminder (PATCH request)."""
+        partial = True
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return CustomResponse(
+            data=serializer.data,
+            message="Reminder partially updated successfully",
+            status_code=status.HTTP_200_OK
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        """Delete a reminder permanently."""
+        instance = self.get_object()
+        instance.delete()
+        return CustomResponse(
+            data=None,
+            message="Reminder deleted successfully",
+            status_code=status.HTTP_204_NO_CONTENT
         )
