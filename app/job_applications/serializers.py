@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import JobApplication, EmploymentType, WorkArrangement, JobApplicationStatus
+from .models import JobApplication, EmploymentType, WorkArrangement, JobApplicationStatus, Reminder
 
 class JobApplicationCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,3 +62,25 @@ class JobApplicationViewSerializer(serializers.ModelSerializer):
             'job_location',
             'job_description',
         ]
+
+class ReminderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reminder
+        fields = '__all__'
+        read_only_fields = ['job_application', 'created_at', 'modified_at']
+        
+    def validate(self, attrs):
+        # Get all field names defined on the serializer (excluding read-only ones)
+        required_fields = [
+            field_name for field_name, field in self.fields.items()
+            if not field.read_only and field.required
+        ]
+        
+        # Check which ones are missing or empty
+        missing = [field for field in required_fields if attrs.get(field) in [None, '']]
+
+        if missing:
+            field_list = ', '.join(missing)
+            raise serializers.ValidationError(f"Missing required fields: {field_list}")
+
+        return attrs
