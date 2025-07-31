@@ -183,6 +183,8 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         work_arrangement = request.query_params.get('work_arrangement')
         company_name = request.query_params.get('company_name')
         position_title = request.query_params.get('position_title')
+        date_from = request.query_params.get('date_from')
+        date_to = request.query_params.get('date_to')
         
         # Apply filters based on provided parameters
         if employment_type:
@@ -201,6 +203,12 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         if position_title:
             # Partial match for position title
             queryset = queryset.filter(position_title__icontains=position_title)
+                    
+        if date_from:
+            queryset = queryset.filter(date_applied__gte=date_from)
+            
+        if date_to:
+            queryset = queryset.filter(date_applied__lte=date_to)
         
         # Order by most recent applications first
         queryset = queryset.order_by('-date_applied')
