@@ -171,3 +171,35 @@ class ChangeProfileUrlSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Profile URL must start with 'http://' or 'https://'.")
 
         return attrs
+
+
+class EmailOnlyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = 'email'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Remove password field
+        self.fields.pop('password', None)
+        # Keep only email field
+        self.fields['email'] = serializers.EmailField()
+    
+    def validate(self, attrs):
+        email = attrs.get('email')
+        
+        if not email:
+            raise serializers.ValidationError('Email is required')
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('User with this email does not exist')
+        
+        # Skip password validation, directly generate tokens
+        refresh = self.get_token(user)
+        
+        self.authenticated_user = user
+        
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
