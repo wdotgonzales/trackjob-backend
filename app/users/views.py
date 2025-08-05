@@ -40,6 +40,32 @@ class UserViewSet(ViewSet):
             message="Users retrieved successfully",
             status_code=status.HTTP_200_OK                  
         )
+    
+    def retrieve(self, request, pk=None):
+        """
+        Retrieve a single user by ID.
+        
+        Args:
+            request: HTTP request object
+            pk: Primary key (ID) of the user to retrieve
+            
+        Returns:
+            CustomResponse: User data if found, error message if not found
+        """
+        try:
+            user = User.objects.get(pk=pk)
+            serializer = UserSerializer(user)
+            return CustomResponse(
+                data=serializer.data,
+                message="User retrieved successfully",
+                status_code=status.HTTP_200_OK
+            )
+        except User.DoesNotExist:
+            return CustomResponse(
+                data={},
+                message="User not found",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
 
 
 # RegisterViewSet handles user registration
