@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User, VerificationCode
-from .serializers import UserSerializer, ResetPasswordSerializer, ChangeProfileUrlSerializer
+from .serializers import UserSerializer, ResetPasswordSerializer, ChangeProfileUrlSerializer, EmailOnlyTokenObtainPairSerializer
 from rest_framework.viewsets import ViewSet
 from rest_framework import status
 from .responses import CustomResponse 
@@ -352,4 +352,33 @@ class ChangeProfileUrlView(APIView):
             data={},
             message=first_error_message,
             status_code=status.HTTP_400_BAD_REQUEST
+        )
+    
+class EmailOnlyTokenObtainPairView(TokenObtainPairView):
+    """JWT token generation with email only."""
+    permission_classes = [AllowAny]
+    serializer_class = EmailOnlyTokenObtainPairSerializer
+    
+    def post(self, request, *args, **kwargs):
+        """
+        Authenticate user with email only and return JWT tokens.
+        
+        Args:
+            request: Contains 'email' only
+            
+        Returns:
+            CustomResponse: Access/refresh tokens if valid, error otherwise
+        """
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return CustomResponse(
+                data={},
+                message="Invalid email or user not found",
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        return CustomResponse(
+            data=serializer.validated_data,
+            message="Login successful",
+            status_code=status.HTTP_200_OK
         )
