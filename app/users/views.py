@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User, VerificationCode
-from .serializers import UserSerializer, ResetPasswordSerializer, ChangeProfileUrlSerializer, EmailOnlyTokenObtainPairSerializer
+from .serializers import UserSerializer, ResetPasswordSerializer, ChangeProfileUrlSerializer, EmailOnlyTokenObtainPairSerializer, CheckEmailExistenceSerializer
 from rest_framework.viewsets import ViewSet
 from rest_framework import status
 from .responses import CustomResponse 
@@ -381,4 +381,26 @@ class EmailOnlyTokenObtainPairView(TokenObtainPairView):
             data=serializer.validated_data,
             message="Login successful",
             status_code=status.HTTP_200_OK
+        )
+    
+class CheckEmailExistenceView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request, *args, **kwargs):
+        serializer = CheckEmailExistenceSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            
+            first_error_message = next(iter(serializer.errors.values()))[0].capitalize()
+
+            return CustomResponse(
+                data={},
+                message=first_error_message,
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return CustomResponse(
+            data=serializer.validated_data,
+            message="Email is available",
+            status_code=status.HTTP_200_OK  
         )

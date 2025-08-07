@@ -203,3 +203,24 @@ class EmailOnlyTokenObtainPairSerializer(TokenObtainPairSerializer):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
+    
+    
+class CheckEmailExistenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email']
+    
+    def validate(self, attrs):
+        email = attrs.get('email')
+        if not email:
+            raise serializers.ValidationError('Email is required')
+        
+        try:
+            user = User.objects.get(email=email)
+            # If we reach this line, the email exists
+            raise serializers.ValidationError('Email already exists')
+        except User.DoesNotExist:
+            # Email doesn't exist, which is what we want for registration
+            pass
+        
+        return attrs
