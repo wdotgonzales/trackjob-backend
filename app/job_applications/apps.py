@@ -6,4 +6,4 @@ class JobApplicationsConfig(AppConfig):
     name = 'job_applications'
     
     def ready(self):
-        import job_applications.signals 
+        from . import signals

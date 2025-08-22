@@ -5,9 +5,25 @@ from job_applications.models import JobApplication
 
 @receiver([post_save, post_delete], sender=JobApplication)
 def invalidate_job_application_cache(sender, instance, **kwargs):
+    """
+    Smart approach: check if delete_pattern is available, otherwise fallback.
+    """
     try:
-        cache.delete_pattern("views.decorators.cache.cache_page.job_application_detail*")
-        cache.delete_pattern("views.decorators.cache.cache_page.job_application_list*")
-        print(f"[Signal] Cache invalidated for JobApplication {pk}")
+        print("Clearing cache for job application list")
+        
+        # Check if delete_pattern method exists
+        if hasattr(cache, 'delete_pattern'):
+            cache.delete_pattern("*job_application_list*")
+            print("Cache cleared using delete_pattern")
+        else:
+            print("delete_pattern not available, clearing all cache")
+            cache.clear()
+            
     except Exception as e:
-        print(f"Cache invalidation failed: {e}")
+        print(f"Error clearing cache: {e}")
+        # Fallback to clearing all cache
+        try:
+            cache.clear()
+            print("Fallback: cleared all cache")
+        except Exception as fallback_error:
+            print(f"Fallback also failed: {fallback_error}")

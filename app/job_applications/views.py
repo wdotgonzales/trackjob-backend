@@ -13,7 +13,7 @@ from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
 # CACHE TIME TO LIVE (5 minutes)
-CACHE_TTL = 60 * 5 
+# CACHE_TTL = 60 * 5 
 
 class JobApplicationViewSet(viewsets.ModelViewSet):
     """
@@ -28,6 +28,8 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         return JobApplicationViewSerializer
     
     def get_queryset(self):
+        import time
+        time.sleep(2)
         return JobApplication.objects.all()
         
     def get_permissions(self):
@@ -71,7 +73,6 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             status_code=status.HTTP_201_CREATED
         )
 
-    # @method_decorator(cache_page(CACHE_TTL, key_prefix="job_application_detail"))
     def retrieve(self, request, *args, **kwargs):
         """Retrieve a single job application with permission check."""
         try:
@@ -257,7 +258,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             status_code=status.HTTP_200_OK
         )
 
-    # @method_decorator(cache_page(CACHE_TTL, key_prefix="job_application_list"))
+    @method_decorator(cache_page(60 * 15, key_prefix="job_application_list"))
     def list(self, request, *args, **kwargs):
         """
         List job applications for the current user with optional filtering.
