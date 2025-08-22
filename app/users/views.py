@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User, VerificationCode
-from .serializers import UserSerializer, ResetPasswordSerializer, ChangeProfileUrlSerializer, EmailOnlyTokenObtainPairSerializer, CheckEmailExistenceSerializer
+from .serializers import UserSerializer, ResetPasswordSerializer, ChangeProfileUrlSerializer, EmailOnlyTokenObtainPairSerializer, CheckEmailExistenceSerializer, UpdateProfileSerializer
 from rest_framework.viewsets import ViewSet
 from rest_framework import status
 from .responses import CustomResponse 
@@ -96,6 +96,66 @@ class RegisterViewSet(ViewSet):
             return CustomResponse(
                 data=None,
                 message="Email is already taken.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Generate 6-digit code    
+        code = f"{random.randint(100000, 999999)}"
+
+        subject = f"TrackJob Verification Code"
+        context = {
+            "user": {"email": to_email, "code": code}
+        }
+
+        text_content = render_to_string("users/emails/welcome.txt", context)
+        html_content = render_to_string("users/emails/welcome.html", context)
+
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=None,  # uses DEFAULT_FROM_EMAIL
+            to=[to_email]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=False)
+        
+        # Code expires in 5 minutes
+        created_at = timezone.now()
+        expires_at = created_at + timedelta(minutes=5)
+        
+        verification_code_data = {
+            "email": to_email,
+            "code": code,
+            "created_at": created_at,
+            "expires_at": expires_at
+        }
+        
+        serializer = VerificationCodeSerializer(data=verification_code_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return CustomResponse(
+            data={"email": to_email},
+            message="Verification code sent to email successfully.",
+            status_code=status.HTTP_200_OK
+        )
+        
+    def send_verification_code_no_check(self, request):
+        """
+        Send 6-digit verification code to email without checking if email exists.
+        
+        Args:
+            request: Contains 'email' field
+            
+        Returns:
+            CustomResponse: Success message or error if email invalid
+        """
+        to_email = request.data.get("email")
+
+        if not to_email:
+            return CustomResponse(
+                data=None,
+                message="Email is required.",
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 
@@ -403,4 +463,48 @@ class CheckEmailExistenceView(APIView):
             data=serializer.validated_data,
             message="Email is available",
             status_code=status.HTTP_200_OK  
+        )
+
+class UpdateProfileView(APIView):
+    """API view for updating user profile information."""
+    
+    def post(self, request):
+        """
+        Update user profile with new information.
+        
+        Args:
+            request: Contains 'full_name' and/or 'profile_url' fields
+            
+        Returns:
+            CustomResponse: Updated profile data or validation error
+        """
+        user = request.user
+        
+        # Use partial=True to allow updating only some fields
+        serializer = UpdateProfileSerializer(user, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            updated_user = serializer.save()
+            
+            # Return updated profile data
+            response_data = {
+                'id': updated_user.id,
+                'email': updated_user.email,
+                'full_name': updated_user.full_name,
+                'profile_url': updated_user.profile_url
+            }
+            
+            return CustomResponse(
+                data=response_data,
+                message="Profile updated successfully.",
+                status_code=status.HTTP_200_OK
+            )
+        
+        # Return first validation error
+        first_error_message = next(iter(serializer.errors.values()))[0]
+        
+        return CustomResponse(
+            data={},
+            message=first_error_message,
+            status_code=status.HTTP_400_BAD_REQUEST
         )

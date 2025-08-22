@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserViewSet, RegisterViewSet, CustomTokenObtainPairView, DecodeTokenView, ResetPasswordView, ChangeProfileUrlView, EmailOnlyTokenObtainPairView, CheckEmailExistenceView
+from .views import UserViewSet, RegisterViewSet, CustomTokenObtainPairView, DecodeTokenView, ResetPasswordView, ChangeProfileUrlView, EmailOnlyTokenObtainPairView, CheckEmailExistenceView, UpdateProfileView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -11,6 +11,8 @@ urlpatterns = [
     path('decode-token/', DecodeTokenView.as_view(), name='decode_token'),
     
     path('send-verification-code/', RegisterViewSet.as_view({'post': 'send_verification_code'}), name='send-verification-code'),
+    path('send-verification-code-no-check/', RegisterViewSet.as_view({'post': 'send_verification_code_no_check'}), name='send-verification-code-no-check'),
+    
     path('verify-code/',  RegisterViewSet.as_view({'post': 'verify_code'}), name='verify-code'),
     
     path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
@@ -19,5 +21,7 @@ urlpatterns = [
 
     path('login-email-only/', EmailOnlyTokenObtainPairView.as_view(), name='email_only_token_obtain_pair'),
     
-    path('check-email-existence/', CheckEmailExistenceView.as_view(), name='check_email_existence')
+    path('check-email-existence/', CheckEmailExistenceView.as_view(), name='check_email_existence'),
+    
+    path('update-profile/', UpdateProfileView.as_view(), name='update-profile'),
 ]

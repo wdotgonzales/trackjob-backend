@@ -224,3 +224,46 @@ class CheckEmailExistenceSerializer(serializers.ModelSerializer):
             pass
         
         return attrs
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating user profile information.
+    
+    Allows updating full_name and profile_url fields.
+    """
+    class Meta:
+        model = User
+        fields = ['full_name', 'profile_url']
+    
+    def validate(self, attrs):
+        """
+        Validate profile update data.
+        
+        Args:
+            attrs: Dictionary containing field values to update
+            
+        Returns:
+            dict: Validated attributes
+            
+        Raises:
+            ValidationError: If validation fails
+        """
+        full_name = attrs.get('full_name', '').strip() if attrs.get('full_name') else None
+        profile_url = attrs.get('profile_url', '').strip() if attrs.get('profile_url') else None
+        
+        # Validate full_name if provided
+        if full_name is not None:
+            if len(full_name) == 0:
+                raise serializers.ValidationError("Full name cannot be empty.")
+            if len(full_name) > 255:
+                raise serializers.ValidationError("Full name cannot exceed 255 characters.")
+        
+        # Validate profile_url if provided
+        if profile_url is not None:
+            if len(profile_url) == 0:
+                # Allow empty string to clear the profile URL
+                attrs['profile_url'] = None
+            elif not profile_url.startswith(('http://', 'https://')):
+                raise serializers.ValidationError("Profile URL must start with 'http://' or 'https://'.")
+        
+        return attrs

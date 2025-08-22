@@ -48,9 +48,8 @@ class JobApplication(models.Model):
     job_application_status = models.ForeignKey(JobApplicationStatus, on_delete=models.SET_NULL, null=True, related_name='job_application_status')
     job_posting_link = models.CharField(max_length=255)
     date_applied = models.DateField()
-    company_logo_url = models.CharField(max_length=255, blank=True, null=True)
     job_location = models.CharField(max_length=255)
-    job_description = models.CharField(max_length=255, null=True)
+    job_description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -58,6 +57,7 @@ class JobApplication(models.Model):
         return f"{self.position_title} at {self.company_name}"
 
     class Meta:
+        ordering = ['-created_at']
         db_table = 'tbl_job_application'
 
 
