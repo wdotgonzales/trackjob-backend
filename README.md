@@ -115,16 +115,16 @@ Edit the `docker-compose.yml` file with your database credentials (must match .e
 services:
   web:
     build: ./app
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn trackjob.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./app/:/usr/src/app/
-    ports:
-      - "8080:8000"
+      - static_volume:/home/app/web/staticfiles
+    expose:
+      - "8000"
     env_file:
       - ./.env.dev
     depends_on:
       - db
-      
+
   db:
     image: mysql:8.0 
     ports:
@@ -132,13 +132,29 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql/
     environment:
-      - MYSQL_DATABASE=trackjob_db # Must match SQL_DATABASE in .env.dev
-      - MYSQL_USER=trackjob_user # Must match SQL_USER in .env.dev
-      - MYSQL_PASSWORD=your_secure_password # Must match SQL_PASSWORD in .env.dev
-      - MYSQL_ROOT_PASSWORD=your_root_password_here # Set a secure root password
-    
+      - MYSQL_DATABASE=your_database_name
+      - MYSQL_USER=your_mysql_user
+      - MYSQL_PASSWORD=your_mysql_password
+      - MYSQL_ROOT_PASSWORD=your_root_password
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
 volumes:
   mysql_data:
+  static_volume:
 ```
 
 ### 10. Build and run the containers
@@ -149,7 +165,7 @@ docker-compose -f docker-compose.yml up -d --build
 ### 11. Access the application
 Open your browser and go to:
 ```
-http://localhost:8080/
+http://localhost:1337/
 ```
 
 ## Windows-Specific Troubleshooting
@@ -176,13 +192,6 @@ sed -i 's/\r$//' app/entrypoint.sh
 1. Ensure Hyper-V is enabled in Windows Features
 2. Enable WSL 2 integration in Docker Desktop settings
 3. Restart Docker Desktop
-
-### Issue: Port 8080 already in use
-**Solution:** Change the port in docker-compose.yml:
-```yaml
-ports:
-  - "8081:8000"  # Change 8080 to any available port
-```
 
 ## Alternative: Using WSL 2 (Recommended for Better Performance)
 For the best Docker experience on Windows, consider using WSL 2:
