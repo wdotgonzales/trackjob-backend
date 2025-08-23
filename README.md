@@ -4,6 +4,16 @@ A RESTful API backend service for the [TrackJob Mobile Application](https://gith
 ## Overview
 TrackJob Backend provides a comprehensive API for tracking job applications, managing application statuses, and organizing job search activities. The service enables users to maintain detailed records of their job applications with real-time status updates and filtering capabilities.
 
+## Why I made this app?
+
+### 🎯 Problem Solved
+Job seekers struggle to track multiple applications across different companies, 
+leading to missed follow-ups and poor application management.
+
+### 💡 Solution
+TrackJob provides a centralized system to track job applications with 
+automated reminders and intelligent filtering.
+
 ## Technical Stack
 - **Framework**: Django / Django REST Framework
 - **Database**: MySQL
