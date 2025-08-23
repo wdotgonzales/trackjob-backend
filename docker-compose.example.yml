@@ -1,11 +1,11 @@
 services:
   web:
     build: ./app
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn trackjob.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./app/:/usr/src/app/
-    ports:
-      - "8080:8000"
+      - static_volume:/home/app/web/staticfiles
+    expose:
+      - "8000"
     env_file:
       - ./.env.dev
     depends_on:
@@ -18,16 +18,26 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql/
     environment:
-      - MYSQL_DATABASE=your_db_name_here <!-- Use the same database name as in .env.dev -->
-      - MYSQL_USER=your_db_user_here <!-- Use the same user as in .env.dev -->
-      - MYSQL_PASSWORD=your_db_password_here <!-- Use the same password as in .env.dev -->
-      - MYSQL_ROOT_PASSWORD=your_root_password_here <!-- Use the same root password as in .env.dev -->
-    
+      - MYSQL_DATABASE=your_database_name
+      - MYSQL_USER=your_mysql_user
+      - MYSQL_PASSWORD=your_mysql_password
+      - MYSQL_ROOT_PASSWORD=your_root_password
+
   redis:
     image: redis:7-alpine
     restart: always
     ports:
       - "6379:6379"
-      
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+
 volumes:
   mysql_data:
+  static_volume:
