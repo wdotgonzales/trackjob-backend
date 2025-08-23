@@ -1201,3 +1201,10 @@ curl -X DELETE http://localhost:1337/api/v1/job_application/15/reminder/8/ \
 4. **Use bulk create** for reminders when you need to create multiple reminders at once
 5. **Pagination** is available for the job applications list - use `?page=1`, `?page=2`, etc.
 6. **Date formats** should be in ISO format: `YYYY-MM-DD` for dates, `YYYY-MM-DDTHH:MM:SSZ` for datetimes
+
+- 
+## Support
+If you like this project, please give it a ⭐
+For questions or support, please open an issue or contact [wdotgonzales@gmail.com](mailto:wdotgonzales@gmail.com).
+
+plz hire me huhu
