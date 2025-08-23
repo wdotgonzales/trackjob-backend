@@ -96,6 +96,15 @@ SQL_PASSWORD=your_secure_password
 SQL_HOST=db
 SQL_PORT=3306
 DATABASE=mysql
+
+# Email SMTP Configurations
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your_account@gmail.com
+EMAIL_HOST_PASSWORD=your_app_password_here
+DEFAULT_FROM_EMAIL=your_account@gmail.com
 ```
 
 ### 8. Copy docker-compose.yml from the example
