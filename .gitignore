@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.dev.example
+!.env.staging.example
 
 # Ignore Docker files except the example
 docker-compose.yml
