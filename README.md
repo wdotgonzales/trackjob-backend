@@ -4,6 +4,13 @@ A RESTful API backend service for the [TrackJob Mobile Application](https://gith
 ## Overview
 TrackJob Backend provides a comprehensive API for tracking job applications, managing application statuses, and organizing job search activities. The service enables users to maintain detailed records of their job applications with real-time status updates and filtering capabilities.
 
+## Production
+You can access this API at:
+```
+https://trackjob-api.live/api/v1/
+```
+The is hosted on an AWS EC2 instance, with the backend running inside Docker containers. The database is managed through AWS RDS, ensuring reliable and scalable data storage. The domain is registered with Namecheap, while Cloudflare handles DNS resolution, SSL/TLS encryption, and performance optimizations.
+
 ## Technical Stack
 - **Framework**: Django / Django REST Framework
 - **Database**: MySQL
@@ -398,7 +405,7 @@ This approach eliminates most Windows-specific issues and provides better perfor
 ### Base URL
 ```
 Development: http://localhost:1337/api/v1/
-Production: https://your-domain.com/api/v1/
+Production: https://trackjob-api.live/api/v1/
 ```
 
 ### User Registration & Authentication
