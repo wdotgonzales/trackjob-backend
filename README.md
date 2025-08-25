@@ -1,6 +1,51 @@
 # TrackJob REST API
 A RESTful API backend service for the [TrackJob Mobile Application](https://github.com/wdotgonzales/trackjob-frontend) that helps users monitor and manage their job applications effectively.
 
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Production](#production)
+3. [Technical Stack](#technical-stack)
+4. [Features](#features)
+   - [Job Application Management](#job-application-management)
+   - [Status Tracking](#status-tracking)
+   - [Employment Type Classification](#employment-type-classification)
+   - [Work Arrangement Options](#work-arrangement-options)
+   - [Advanced Filtering & Search](#advanced-filtering--search)
+5. [Database Structure](#database-structure)
+   - [Database Schema](#database-schema)
+     - [User Management](#1-user-management)
+     - [Job Application System](#2-job-application-system)
+   - [Entity Relationships](#entity-relationships)
+   - [Relationship Details](#relationship-details)
+6. [Prerequisites for Installation](#prerequisites-for-installation)
+7. [Installation](#installation)
+   - [Step-by-Step Setup](#installation)
+   - [Windows-Specific Troubleshooting](#windows-specific-troubleshooting)
+   - [Alternative: Using WSL 2](#alternative-using-wsl-2-recommended-for-better-performance)
+8. [API Documentation](#api-documentation)
+   - [Base URL](#base-url)
+   - [Endpoint Overview](#endpoint-overview)
+     - [User Registration & Authentication](#user-registration--authentication)
+     - [Email Verification](#email-verification)
+     - [Password Management](#password-management)
+     - [Profile Management](#profile-management)
+     - [Job Applications](#job-applications)
+     - [Bulk Operations](#bulk-operations)
+     - [Job Application Filtering](#job-application-filtering-query-parameters)
+     - [Reminders](#reminders-nested-under-job-applications)
+   - [Response Format](#response-format)
+9. [Sample API Examples/Usage](#sample-api-exampleusage)
+   - [Authentication Examples](#authentication-examples)
+   - [Job Application API Examples](#-job-application-apis)
+   - [Reminder API Examples](#-reminder-apis)
+10. [Lookup Values](#-lookup-values)
+11. [Error Responses](#-error-responses)
+12. [Tips](#-tips)
+13. [Support](#support)
+
+---
+
 ## Overview
 TrackJob Backend provides a comprehensive API for tracking job applications, managing application statuses, and organizing job search activities. The service enables users to maintain detailed records of their job applications with real-time status updates and filtering capabilities.
 
@@ -9,7 +54,7 @@ You can access this API at:
 ```
 https://trackjob-api.live/api/v1/
 ```
-Hosted on an AWS EC2 instance, with the backend running inside Docker containers. The database is managed through AWS RDS, ensuring reliable and scalable data storage. The domain is registered with Namecheap, while Cloudflare handles DNS resolution, SSL/TLS encryption, and performance optimizations.
+Hosted on an AWS EC2 instance, with the backend running inside Docker containers. The database is managed through AWS RDS, ensuring reliable and scalable data storage. The domain is registered with Namecheap, while Cloudflare handles DNS resolution, SSL/TLS encryption, and performance optimizations. 
 
 ## Technical Stack
 - **Framework**: Django / Django REST Framework
